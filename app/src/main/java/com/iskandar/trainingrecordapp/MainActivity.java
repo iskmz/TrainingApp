@@ -29,6 +29,15 @@ public class MainActivity extends AppCompatActivity {
     TextToSpeech tts;
 
 
+    // TODO mini music player
+    // two layout "lines"
+        // top: current track name (or first in list {make marqueeable})
+        //      + button (at end) to change playlist src:[opens files explorer to choose
+        //          a folder with "mp3s" ]
+        //          then shows the list in a "tmp-dialog" to delete unwanted tracks
+        //          then after pressing "OK" starts playing the first track in the MODIFIED list ...
+        // bottom: player buttons:  prev, play/pause, next, repeat-one
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
