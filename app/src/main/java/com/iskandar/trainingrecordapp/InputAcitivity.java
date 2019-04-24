@@ -10,6 +10,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class InputAcitivity extends AppCompatActivity {
 
     final int MAX_PUSHUPS = 150;
@@ -48,7 +51,7 @@ public class InputAcitivity extends AppCompatActivity {
                 finish();
             }
         });
-
+        // counters // on Click
         btnPushupsAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { incrementCounter(counterPushups,MAX_PUSHUPS); }
@@ -73,7 +76,7 @@ public class InputAcitivity extends AppCompatActivity {
             @Override
             public void onClick(View v) { decrementCounter(counterTreadmillTime,MIN_MINUTES); }
         });
-
+        // counters // on LONG click
         btnPushupsAdd.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) { doIt(1,v,counterPushups,MAX_PUSHUPS); return false; }
@@ -98,10 +101,25 @@ public class InputAcitivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) { doIt(-1,v,counterTreadmillTime,MIN_MINUTES); return false; }
         });
+        // SAVE //
+        btnSaveData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO
+
+                // 1. check fields , empty or not ?
+                // 2. check conditions (if distance, then time, or vice versa) ..etc ...
+                // 3. save to local sql db using the "helper"
+            }
+        });
     }
 
 
     private void loadData() {
+
+        // TODO
+
+        // load data for TODAY, if already EXIST ! //
     }
 
     private void setPointers() {
@@ -118,9 +136,29 @@ public class InputAcitivity extends AppCompatActivity {
         btnTreadmillDistanceMinus = findViewById(R.id.btnLessTreadmillKilometers);
         btnPushupsAdd = findViewById(R.id.btnMorePushups);
         btnPushupsMinus = findViewById(R.id.btnLessPushups);
-        txtDateToday = findViewById(R.id.txtDateToday);
         txtOtherInput = findViewById(R.id.txtInputOther);
 
+        txtDateToday = findViewById(R.id.txtDateToday);
+        txtDateToday.setText(getTodaysDate());
+    }
+
+    private String getTodaysDate() {
+        Date dt = new Date();
+        String pre = new SimpleDateFormat("EEEE, MMMM d").format(dt);
+        String daySuffix = getTodaysSuffix(dt);
+        String post = new SimpleDateFormat(", yyyy").format(dt);
+        return pre + daySuffix + post;
+    }
+
+    private String getTodaysSuffix(Date date) {
+        int today = Integer.parseInt(new SimpleDateFormat("d").format(date));
+        switch (today%10)
+        {
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
+        }
     }
 
 
