@@ -2,6 +2,7 @@ package com.iskandar.trainingrecordapp;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ public class InputAcitivity extends AppCompatActivity {
     final int MIN_MINUTES = 0;
     final double MIN_KILOMETERS = 0;
 
+    final long DELAY_ON_LONG_CLICK = 100; // in msec
 
     Context context;
     ImageView btnExitActivity, btnSaveData;
@@ -39,6 +41,13 @@ public class InputAcitivity extends AppCompatActivity {
     }
 
     private void setListeners() {
+
+        btnExitActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         btnPushupsAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +73,33 @@ public class InputAcitivity extends AppCompatActivity {
             @Override
             public void onClick(View v) { decrementCounter(counterTreadmillTime,MIN_MINUTES); }
         });
+
+        btnPushupsAdd.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View v) { doIt(1,v,counterPushups,MAX_PUSHUPS); return false; }
+        });
+        btnTreadmillDistanceAdd.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { doIt(1,v,counterTreadmillDistance,MAX_KILOMETERS); return false; }
+        });
+        btnTreadmillTimeAdd.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { doIt(1,v,counterTreadmillTime,MAX_MINUTES); return false; }
+        });
+        btnPushupsMinus.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { doIt(-1,v,counterPushups,MIN_PUSHUPS); return false; }
+        });
+        btnTreadmillDistanceMinus.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { doIt(-1,v,counterTreadmillDistance,MIN_KILOMETERS); return false; }
+        });
+        btnTreadmillTimeMinus.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { doIt(-1,v,counterTreadmillTime,MIN_MINUTES); return false; }
+        });
     }
+
 
     private void loadData() {
     }
@@ -86,6 +121,26 @@ public class InputAcitivity extends AppCompatActivity {
         txtDateToday = findViewById(R.id.txtDateToday);
         txtOtherInput = findViewById(R.id.txtInputOther);
 
+    }
+
+
+    private void doIt(final int switcher, final View v, final TextView counter, final double valueMaxMin) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    SystemClock.sleep(DELAY_ON_LONG_CLICK);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(switcher==1) incrementCounter(counter,valueMaxMin);
+                            else decrementCounter(counter,valueMaxMin);
+                        }
+                    });
+                    if (!v.isPressed()) break;
+                }
+            }
+        }).start();
     }
 
     private void incrementCounter(TextView counter,double maxValue)
@@ -125,6 +180,7 @@ public class InputAcitivity extends AppCompatActivity {
         int tmp = ((int)(num*10))+1;
         return ((double)tmp/10);
     }
+
     private double minusPointOne(double num)
     {
         int tmp = ((int)(num*10))-1;
