@@ -31,12 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO mini music player
     // two layout "lines"
-        // top: current track name (or first in list {make marqueeable})
+        // TOP: current track name (or first in list {make marqueeable})
         //      + button (at end) to change playlist src:[opens files explorer to choose
         //          a folder with "mp3s" ]
         //          then shows the list in a "tmp-dialog" to delete unwanted tracks
         //          then after pressing "OK" starts playing the first track in the MODIFIED list ...
-        // bottom: player buttons:  prev, play/pause, next, repeat-one
+        // BOTTOM: player buttons:  prev, play/pause, next, repeat-one
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,13 +130,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("tts", status == 0 ? "SUCCESS" : "ERROR");
                 if (status != TextToSpeech.ERROR) {
                     if (tts.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_MISSING_DATA
-                            && tts.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED) {
+                            && tts.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED)
+                    {
                         tts.setLanguage(Locale.ENGLISH);
                         tts.setPitch(1.5f);
                         tts.setSpeechRate(1.5f);
                         String toSpeak = txtUp + "...\n" + txtDown;
                         tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
-                    } else {
+                    }
+                    else
+                    {
                         Log.e("english", "NOT AVAILABLE");
                     }
                 }

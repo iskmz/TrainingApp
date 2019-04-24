@@ -3,4 +3,11 @@
     <string name="title_activity_record_list">RecordListActivity</string>
     <string name="default_welcome_top">Welcome</string>
     <string name="default_welcome_bottom">enjoy your stay</string>
+    <string name="treadmill_subtitle_txt">Treadmill &#8230;</string>
+    <string name="kilometers">kilometers</string>
+    <string name="minutes">minutes</string>
+    <string name="placeholder_dateTitle">DayName, Month Day , Year</string>
+    <string name="push_ups__subtitle_txt">Push-ups &#8230;</string>
+    <string name="other_subtitle_txt">Other :</string>
+    <string name="hint_enter_other_activies">&#9;&#9;Enter other activies &#8230;</string>
 </resources>
