@@ -2,8 +2,8 @@ package com.iskandar.trainingrecordapp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setPointers();
         setListeners();
     }
-
+// new branch ongoing check
     private void setListeners() {
 
         btnExit.setOnClickListener(new View.OnClickListener() {
