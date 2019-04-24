@@ -6,13 +6,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     ImageView btnExit, btnShowRecords, btnInputScreen;
 
+    TextToSpeech tts;
 
 
     @Override
@@ -73,12 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
         // set the views to inflate from ...
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_welcome,null);
-        TextView txtTop = v.findViewById(R.id.txtWelcomeTop);
-        TextView txtBottom = v.findViewById(R.id.txtWelcomeBottom);
+        final TextView txtTop = v.findViewById(R.id.txtWelcomeTop);
+        final TextView txtBottom = v.findViewById(R.id.txtWelcomeBottom);
         txtTop.setText(Utils.genMsgByTime()[0]);
         txtBottom.setText(Utils.genMsgByTime()[1]);
 
-        // set the dialog
+        // say the welcome msg (speech)
+        sayHello(txtTop.getText(),txtBottom.getText());
+
+        // set & show the dialog
         final Dialog welcomeDialog = new Dialog(context,R.style.Theme_AppCompat_Dialog);
         welcomeDialog.setContentView(v);
         welcomeDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -95,19 +103,45 @@ public class MainActivity extends AppCompatActivity {
                 // wait for "WELCOME_DELAY" seconds and then close dialog //
                 new Thread(new Runnable() {
                     @Override
-                    public void run() {
-                        SystemClock.sleep(WELCOME_DELAY*1000);
-                        dialog.dismiss();
-                    }
+                    public void run() { SystemClock.sleep(WELCOME_DELAY*1000); dialog.dismiss(); }
                 }).start();
             }
-        });
 
+
+        });
 
         welcomeDialog.setCanceledOnTouchOutside(false);
         welcomeDialog.show();
     }
 
+    private void sayHello(final CharSequence txtUp, final CharSequence txtDown) {
+        tts=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                Log.e("tts", status == 0 ? "SUCCESS" : "ERROR");
+                if (status != TextToSpeech.ERROR) {
+                    if (tts.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_MISSING_DATA
+                            && tts.isLanguageAvailable(Locale.ENGLISH) != TextToSpeech.LANG_NOT_SUPPORTED) {
+                        tts.setLanguage(Locale.ENGLISH);
+                        tts.setPitch(1.5f);
+                        tts.setSpeechRate(1.5f);
+                        String toSpeak = txtUp + "...\n" + txtDown;
+                        tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
+                    } else {
+                        Log.e("english", "NOT AVAILABLE");
+                    }
+                }
+            }
+        });
 
+    }
 
+    @Override
+    protected void onDestroy() {
+        if(tts != null){
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
 }
