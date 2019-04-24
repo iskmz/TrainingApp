@@ -11,8 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".InputAcitivity"></activity>
-        <activity android:name=".RecordListActivity" />
+        <activity android:name=".InputAcitivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".RecordListActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
