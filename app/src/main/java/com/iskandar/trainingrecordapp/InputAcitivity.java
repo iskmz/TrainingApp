@@ -94,7 +94,7 @@ public class InputAcitivity extends AppCompatActivity {
         if(tmp.indexOf(".")!=-1) // if has decimal point ... keep it
         {
             double tmpNum = Double.parseDouble(tmp.toString());
-            tmp = new StringBuilder((tmpNum>=maxValue?maxValue:tmpNum+0.1)+"");
+            tmp = new StringBuilder((tmpNum>=maxValue?maxValue:plusPointOne(tmpNum))+"");
         }
         else
         {
@@ -110,7 +110,7 @@ public class InputAcitivity extends AppCompatActivity {
         if(tmp.indexOf(".")!=-1) // if has decimal point ... keep it
         {
             double tmpNum = Double.parseDouble(tmp.toString());
-            tmp = new StringBuilder((tmpNum<=minValue?minValue:tmpNum-0.1)+"");
+            tmp = new StringBuilder((tmpNum<=minValue?minValue:minusPointOne(tmpNum))+"");
         }
         else
         {
@@ -119,4 +119,16 @@ public class InputAcitivity extends AppCompatActivity {
         }
         counter.setText(tmp);
     }
+
+    private double plusPointOne(double num)
+    {
+        int tmp = ((int)(num*10))+1;
+        return ((double)tmp/10);
+    }
+    private double minusPointOne(double num)
+    {
+        int tmp = ((int)(num*10))-1;
+        return ((double)tmp/10);
+    }
+
 }
