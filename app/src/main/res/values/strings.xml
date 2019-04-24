@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Training App</string>
+    <string name="title_activity_record_list">RecordListActivity</string>
+</resources>
