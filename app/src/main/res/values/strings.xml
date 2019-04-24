@@ -9,5 +9,5 @@
     <string name="placeholder_dateTitle">DayName, Month Day , Year</string>
     <string name="push_ups__subtitle_txt">Push-ups &#8230;</string>
     <string name="other_subtitle_txt">Other :</string>
-    <string name="hint_enter_other_activies">&#9;&#9;Enter other activies &#8230;</string>
+    <string name="hint_enter_other_activies">&#9;&#9;Enter other activities &#8230;</string>
 </resources>

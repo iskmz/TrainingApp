@@ -48,17 +48,21 @@
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_minus"
                                 android:layout_below="@id/txtTreadmillTitle"
-                                android:layout_toStartOf="@id/numpickTreadmillMinutes"
+                                android:layout_toStartOf="@id/txtCounterTreadmillMinutes"
                                 android:tint="@android:color/holo_green_light"
                                 android:background="#000000"/>
 
-                            <NumberPicker
-                                android:id="@+id/numpickTreadmillMinutes"
+                            <TextView
+                                android:id="@+id/txtCounterTreadmillMinutes"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
+                                android:text="0"
+                                android:gravity="center"
+                                android:textSize="18sp"
+                                android:textColor="#ffffff"
                                 android:layout_below="@id/txtTreadmillTitle"
                                 android:layout_centerHorizontal="true">
-                            </NumberPicker>
+                            </TextView>
 
                             <ImageButton
                                 android:id="@+id/btnMoreTreadmillMinutes"
@@ -66,7 +70,7 @@
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_add"
                                 android:layout_below="@id/txtTreadmillTitle"
-                                android:layout_toEndOf="@id/numpickTreadmillMinutes"
+                                android:layout_toEndOf="@id/txtCounterTreadmillMinutes"
                                 android:tint="@android:color/holo_green_light"
                                 android:background="#000000"/>
 
@@ -90,18 +94,22 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_minus"
-                    android:layout_below="@id/numpickTreadmillMinutes"
-                    android:layout_toStartOf="@id/numpickTreadmillKilometers"
+                    android:layout_below="@id/txtCounterTreadmillMinutes"
+                    android:layout_toStartOf="@id/txtCounterTreadmillKilometers"
                     android:tint="@android:color/holo_green_light"
                     android:background="#000000"/>
 
-                <NumberPicker
-                    android:id="@+id/numpickTreadmillKilometers"
+                <TextView
+                    android:id="@+id/txtCounterTreadmillKilometers"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_below="@id/numpickTreadmillMinutes"
+                    android:text="0.0"
+                    android:gravity="center"
+                    android:textSize="18sp"
+                    android:textColor="#ffffff"
+                    android:layout_below="@id/txtCounterTreadmillMinutes"
                     android:layout_centerHorizontal="true">
-                </NumberPicker>
+                </TextView>
 
 
 
@@ -110,8 +118,8 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_add"
-                    android:layout_below="@id/numpickTreadmillMinutes"
-                    android:layout_toEndOf="@id/numpickTreadmillKilometers"
+                    android:layout_below="@id/txtCounterTreadmillMinutes"
+                    android:layout_toEndOf="@id/txtCounterTreadmillKilometers"
                     android:tint="@android:color/holo_green_light"
                     android:background="#000000"/>
 
@@ -120,7 +128,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/kilometers"
-                    android:layout_below="@id/numpickTreadmillMinutes"
+                    android:layout_below="@id/txtCounterTreadmillMinutes"
                     android:layout_toEndOf="@id/btnMoreTreadmillKilometers"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
@@ -137,7 +145,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="16dp"
             android:textSize="16sp"
-            android:layout_below="@id/numpickTreadmillKilometers"
+            android:layout_below="@id/txtCounterTreadmillKilometers"
             android:layout_marginTop="20dp"
             android:textColor="#7fffffff"
             android:text="@string/push_ups__subtitle_txt"
@@ -149,17 +157,21 @@
             android:layout_height="40dp"
             android:src="@drawable/ic_minus"
             android:layout_below="@id/txtPushUpsTitle"
-            android:layout_toStartOf="@id/numpickPushups"
+            android:layout_toStartOf="@id/txtCounterPushups"
             android:tint="@android:color/holo_green_light"
             android:background="#000000"/>
 
-        <NumberPicker
-            android:id="@+id/numpickPushups"
+        <TextView
+            android:id="@+id/txtCounterPushups"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:text="0"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
             android:layout_below="@id/txtPushUpsTitle"
             android:layout_centerHorizontal="true">
-        </NumberPicker>
+        </TextView>
 
 
 
@@ -169,7 +181,7 @@
             android:layout_height="40dp"
             android:src="@drawable/ic_add"
             android:layout_below="@id/txtPushUpsTitle"
-            android:layout_toEndOf="@id/numpickPushups"
+            android:layout_toEndOf="@id/txtCounterPushups"
             android:tint="@android:color/holo_green_light"
             android:background="#000000"/>
 
@@ -182,7 +194,7 @@
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="16dp"
                                 android:textSize="16sp"
-                                android:layout_below="@id/numpickPushups"
+                                android:layout_below="@id/txtCounterPushups"
                                 android:layout_marginTop="20dp"
                                 android:textColor="#7fffffff"
                                 android:text="@string/other_subtitle_txt"
@@ -194,7 +206,7 @@
                                 android:textColorHint="#ffffff"
                                 android:hint="@string/hint_enter_other_activies"
                                 android:textSize="16sp"
-                                android:background="#11ffffff"
+                                android:background="#44ffffff"
                                 android:textStyle="italic"
                                 android:gravity="start"
 
@@ -203,15 +215,11 @@
                                 android:scrollbarAlwaysDrawVerticalTrack="true"
                                 android:scrollHorizontally="false"
 
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="200dp"
+                                android:layout_height="100dp"
                                 android:layout_alignTop="@id/txtOtherTitle"
                                 android:layout_toEndOf="@id/txtOtherTitle"
-                                android:layout_marginStart="40dp"
-                                android:layout_alignParentBottom="true"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="20dp"
-                                android:layout_marginBottom="10dp"/>
+                                android:layout_marginStart="40dp"/>
 
     </RelativeLayout>
 
@@ -220,7 +228,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="3">
+        android:layout_weight="2">
 
 
 
