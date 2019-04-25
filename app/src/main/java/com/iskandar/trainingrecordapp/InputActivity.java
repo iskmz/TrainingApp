@@ -30,7 +30,7 @@ public class InputActivity extends AppCompatActivity {
     DataSQLlite dataDb;
 
     Context context;
-    ImageView btnExitActivity, btnSaveData;
+    ImageView btnExitActivity, btnSaveData,btnClearText;
     TextView counterTreadmillTime, counterTreadmillDistance, counterPushups;
     ImageButton btnTreadmillTimeAdd, btnTreadmillTimeMinus,
                  btnTreadmillDistanceAdd, btnTreadmillDistanceMinus,
@@ -113,6 +113,11 @@ public class InputActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) { counterPushups.setText("0"); return true; }
         });
+        // CLEAR (other text) //
+        btnClearText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { txtOtherInput.setText(""); }
+        });
         // EXIT //
         btnExitActivity.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,6 +198,7 @@ public class InputActivity extends AppCompatActivity {
         btnPushupsAdd = findViewById(R.id.btnMorePushups);
         btnPushupsMinus = findViewById(R.id.btnLessPushups);
         txtOtherInput = findViewById(R.id.txtInputOther);
+        btnClearText = findViewById(R.id.btnClearText);
 
         txtDateToday = findViewById(R.id.txtDateToday);
         txtDateToday.setText(getTodaysDate());
