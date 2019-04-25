@@ -1,14 +1,19 @@
 package com.iskandar.trainingrecordapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,13 +50,7 @@ public class InputAcitivity extends AppCompatActivity {
 
     private void setListeners() {
 
-        btnExitActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        // counters // on Click
+        // counters' plus & minus // on Click
         btnPushupsAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { incrementCounter(counterPushups,MAX_PUSHUPS); }
@@ -76,7 +75,7 @@ public class InputAcitivity extends AppCompatActivity {
             @Override
             public void onClick(View v) { decrementCounter(counterTreadmillTime,MIN_MINUTES); }
         });
-        // counters // on LONG click
+        // counters' plus and minus // on LONG click
         btnPushupsAdd.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) { doIt(1,v,counterPushups,MAX_PUSHUPS); return false; }
@@ -101,17 +100,93 @@ public class InputAcitivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View v) { doIt(-1,v,counterTreadmillTime,MIN_MINUTES); return false; }
         });
+        // counters themselves! // clear on LONG CLICK
+        counterTreadmillTime.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { counterTreadmillTime.setText("0"); return true; }
+        });
+        counterTreadmillDistance.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { counterTreadmillDistance.setText("0.0"); return true; }
+        });
+        counterPushups.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) { counterPushups.setText("0"); return true; }
+        });
+        // EXIT //
+        btnExitActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         // SAVE //
         btnSaveData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO
-
                 // 1. check fields , empty or not ?
                 // 2. check conditions (if distance, then time, or vice versa) ..etc ...
                 // 3. save to local sql db using the "helper"
+                // 4. if successful show message to user "data was successfully saved !"
+
+                if(!fieldsCheckOK()) { return;} // 1 + 2 //
+                // 3 //
+
+
+
+                // 4 //
+
+            }
+
+            private boolean fieldsCheckOK() {
+                // check 1 // ALL FIELDS ARE EMPTY //
+                if (counterPushups.getText().equals("0")
+                        && counterTreadmillTime.getText().equals("0")
+                        && counterTreadmillDistance.getText().equals("0.0")
+                        && txtOtherInput.getText().toString().isEmpty())
+                {
+                    showMessage(2,"All fields are empty, nothing to save, nothing was saved!");
+                    return false;
+                }
+
+                // check 2 // BOTH distance & time are entered ! //
+                if(counterTreadmillDistance.getText().equals("0.0") && !counterTreadmillTime.getText().equals("0")
+                    || counterTreadmillTime.getText().equals("0") && !counterTreadmillDistance.getText().equals("0.0"))
+                {
+                    showMessage(2,"Both Time & Distance fields must be non-zero!");
+                    return false;
+                }
+
+                return true;
             }
         });
+
+
+    }
+
+    private void showMessage(int switcher, String msg) {
+        switch(switcher) // 0: toast, 1: snackbar, 2: alert-dialog //
+        {
+            case 1:
+                final Snackbar sn = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+                sn.setAction("OK", new View.OnClickListener() {
+                            @Override public void onClick(View v) { sn.dismiss(); }});
+                sn.setActionTextColor(Color.RED);
+                sn.show();
+                break;
+            case 2:
+                AlertDialog alert = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert)
+                        .setIcon(R.drawable.ic_warning_red).setMessage(msg)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) { dialog.dismiss(); }})
+                        .show();
+                break;
+            default: // = 0
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+
+        }
     }
 
 

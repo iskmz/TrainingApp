@@ -16,6 +16,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -89,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
         View v = LayoutInflater.from(context).inflate(R.layout.dialog_welcome,null);
         final TextView txtTop = v.findViewById(R.id.txtWelcomeTop);
         final TextView txtBottom = v.findViewById(R.id.txtWelcomeBottom);
-        txtTop.setText(Utils.genMsgByTime()[0]);
-        txtBottom.setText(Utils.genMsgByTime()[1]);
+        txtTop.setText(genMsgByTime()[0]);
+        txtBottom.setText(genMsgByTime()[1]);
 
         // say the welcome msg (speech)
         sayHello(txtTop.getText(),txtBottom.getText());
@@ -147,6 +149,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+
+    private String[] genMsgByTime()
+    {
+        int hour = Integer.parseInt(new SimpleDateFormat("HH").format(new Date()));
+        if(hour>=4 && hour <=10) return new String[]{"Good Morning","Have a great training session!"};
+        else if (hour>=11 && hour<=13) return new String[]{"Hello","Have an easy training!"};
+        else if (hour>=14 && hour<=17) return new String[]{"Good Afternoon","Have an enjoyable training!"};
+        else if (hour>=18 && hour<=21) return new String[]{"Good Evening","enjoy your session!"};
+        else return new String[]{"Good Night","You should be sleeping by now!"};
+    }
+
 
     @Override
     protected void onDestroy() {
