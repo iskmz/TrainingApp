@@ -2,6 +2,7 @@ package com.iskandar.trainingrecordapp;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -28,6 +29,8 @@ public class InputAcitivity extends AppCompatActivity {
     final double MIN_KILOMETERS = 0;
 
     final long DELAY_ON_LONG_CLICK = 100; // in msec
+
+    DataSQLlite dataDb;
 
     Context context;
     ImageView btnExitActivity, btnSaveData;
@@ -193,8 +196,15 @@ public class InputAcitivity extends AppCompatActivity {
     private void loadData() {
 
         // TODO
-
         // load data for TODAY, if already EXIST ! //
+        dataDb = new DataSQLlite(context);
+        Cursor tmp = dataDb.getTodaysData();
+        if (tmp.getCount()==0) return;
+        tmp.moveToFirst();
+        counterTreadmillTime.setText(tmp.getString(DataSQLlite.COL_runningTime));
+        counterTreadmillDistance.setText(tmp.getString(DataSQLlite.COL_runningDistance));
+        counterPushups.setText(tmp.getString(DataSQLlite.COL_pushups));
+        txtOtherInput.setText(tmp.getString(DataSQLlite.COL_other));
     }
 
     private void setPointers() {
