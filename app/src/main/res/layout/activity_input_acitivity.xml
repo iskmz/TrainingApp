@@ -44,19 +44,20 @@
 
                             <ImageButton
                                 android:id="@+id/btnLessTreadmillMinutes"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="60dp"
+                                android:layout_height="45dp"
                                 android:src="@drawable/ic_minus"
                                 android:layout_below="@id/txtTreadmillTitle"
                                 android:layout_toStartOf="@id/txtCounterTreadmillMinutes"
-                                android:tint="@android:color/holo_green_light"
-                                android:background="#000000"/>
+                                android:tint="@android:color/holo_red_dark"
+                                android:background="@drawable/button_minus"/>
 
                             <TextView
                                 android:id="@+id/txtCounterTreadmillMinutes"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="60dp"
+                                android:layout_height="45dp"
                                 android:text="0"
+                                android:background="@drawable/back_counter"
                                 android:gravity="center"
                                 android:textSize="18sp"
                                 android:textColor="#ffffff"
@@ -66,23 +67,22 @@
 
                             <ImageButton
                                 android:id="@+id/btnMoreTreadmillMinutes"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="60dp"
+                                android:layout_height="45dp"
                                 android:src="@drawable/ic_add"
                                 android:layout_below="@id/txtTreadmillTitle"
                                 android:layout_toEndOf="@id/txtCounterTreadmillMinutes"
-                                android:tint="@android:color/holo_green_light"
-                                android:background="#000000"/>
+                                android:tint="#02E710"
+                                android:background="@drawable/button_plus"/>
 
                             <TextView
                                 android:id="@+id/txtTreadmillMinutes"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/minutes"
-                                android:layout_below="@id/txtTreadmillTitle"
-                                android:layout_toEndOf="@id/btnMoreTreadmillMinutes"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginStart="10dp"
+                                android:layout_alignStart="@id/txtTreadmillTitle"
+                                android:layout_alignBottom="@id/txtCounterTreadmillMinutes"
+                                android:layout_marginBottom="10dp"
                                 android:textSize="14sp"
                                 android:textStyle="italic"
                                 android:textColor="#ffffff"/>
@@ -91,22 +91,25 @@
 
                   <ImageButton
                     android:id="@+id/btnLessTreadmillKilometers"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                      android:layout_width="60dp"
+                      android:layout_height="45dp"
                     android:src="@drawable/ic_minus"
                     android:layout_below="@id/txtCounterTreadmillMinutes"
                     android:layout_toStartOf="@id/txtCounterTreadmillKilometers"
-                    android:tint="@android:color/holo_green_light"
-                    android:background="#000000"/>
+                    android:tint="@android:color/holo_red_dark"
+                      android:layout_marginTop="10dp"
+                    android:background="@drawable/button_minus"/>
 
                 <TextView
                     android:id="@+id/txtCounterTreadmillKilometers"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
                     android:text="0.0"
                     android:gravity="center"
                     android:textSize="18sp"
+                    android:background="@drawable/back_counter"
                     android:textColor="#ffffff"
+                    android:layout_marginTop="10dp"
                     android:layout_below="@id/txtCounterTreadmillMinutes"
                     android:layout_centerHorizontal="true">
                 </TextView>
@@ -115,23 +118,23 @@
 
                 <ImageButton
                     android:id="@+id/btnMoreTreadmillKilometers"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="60dp"
+                    android:layout_height="45dp"
                     android:src="@drawable/ic_add"
                     android:layout_below="@id/txtCounterTreadmillMinutes"
                     android:layout_toEndOf="@id/txtCounterTreadmillKilometers"
-                    android:tint="@android:color/holo_green_light"
-                    android:background="#000000"/>
+                    android:tint="#02E710"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/button_plus"/>
 
                 <TextView
                     android:id="@+id/txtTreadmillKilometers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/kilometers"
-                    android:layout_below="@id/txtCounterTreadmillMinutes"
-                    android:layout_toEndOf="@id/btnMoreTreadmillKilometers"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_alignStart="@id/txtTreadmillTitle"
+                    android:layout_alignBottom="@id/txtCounterTreadmillKilometers"
+                    android:layout_marginBottom="10dp"
                     android:textSize="14sp"
                     android:textStyle="italic"
                     android:textColor="#ffffff"/>
@@ -153,21 +156,22 @@
 
         <ImageButton
             android:id="@+id/btnLessPushups"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="60dp"
+            android:layout_height="45dp"
             android:src="@drawable/ic_minus"
             android:layout_below="@id/txtPushUpsTitle"
             android:layout_toStartOf="@id/txtCounterPushups"
-            android:tint="@android:color/holo_green_light"
-            android:background="#000000"/>
+            android:tint="@android:color/holo_red_dark"
+            android:background="@drawable/button_minus"/>
 
         <TextView
             android:id="@+id/txtCounterPushups"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="60dp"
+            android:layout_height="45dp"
             android:text="0"
             android:gravity="center"
             android:textSize="18sp"
+            android:background="@drawable/back_counter"
             android:textColor="#ffffff"
             android:layout_below="@id/txtPushUpsTitle"
             android:layout_centerHorizontal="true">
@@ -177,13 +181,13 @@
 
         <ImageButton
             android:id="@+id/btnMorePushups"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="60dp"
+            android:layout_height="45dp"
             android:src="@drawable/ic_add"
             android:layout_below="@id/txtPushUpsTitle"
             android:layout_toEndOf="@id/txtCounterPushups"
-            android:tint="@android:color/holo_green_light"
-            android:background="#000000"/>
+            android:tint="#02E710"
+            android:background="@drawable/button_plus"/>
 
 
 
@@ -206,7 +210,7 @@
                                 android:textColorHint="#ffffff"
                                 android:hint="@string/hint_enter_other_activies"
                                 android:textSize="16sp"
-                                android:background="#44ffffff"
+                                android:background="#3fffffff"
                                 android:textStyle="italic"
                                 android:gravity="start"
 
@@ -228,7 +232,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2">
+        android:layout_weight="3">
 
 
 
