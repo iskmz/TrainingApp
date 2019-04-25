@@ -1,25 +1,20 @@
 package com.iskandar.trainingrecordapp;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class InputAcitivity extends AppCompatActivity {
+public class InputActivity extends AppCompatActivity {
 
     final int MAX_PUSHUPS = 150;
     final int MAX_MINUTES = 180;
@@ -29,6 +24,8 @@ public class InputAcitivity extends AppCompatActivity {
     final double MIN_KILOMETERS = 0;
 
     final long DELAY_ON_LONG_CLICK = 100; // in msec
+
+    final int TOAST = Utils.TOAST, SNACKBAR = Utils.SNACKBAR, ALERT = Utils.ALERT;
 
     DataSQLlite dataDb;
 
@@ -44,7 +41,7 @@ public class InputAcitivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_input_acitivity);
+        setContentView(R.layout.activity_input);
 
         setPointers();
         loadData();
@@ -127,7 +124,6 @@ public class InputAcitivity extends AppCompatActivity {
         btnSaveData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
                 // 1. check fields , empty or not ?
                 // 2. check conditions (if distance, then time, or vice versa) ..etc ...
                 // 3. save to local sql db using the "helper"
@@ -135,11 +131,14 @@ public class InputAcitivity extends AppCompatActivity {
 
                 if(!fieldsCheckOK()) { return;} // 1 + 2 //
                 // 3 //
-
-
-
+                boolean check = dataDb.addDataEntryToday(
+                                    counterTreadmillTime.getText().toString(),
+                                    counterTreadmillDistance.getText().toString(),
+                                    counterPushups.getText().toString(),
+                                    txtOtherInput.getText().toString());
                 // 4 //
-
+                if(check) Utils.showMessage(context,TOAST,"Today's data was saved successfully!");
+                else Utils.showMessage(context,TOAST,"ERROR while trying to save data!");
             }
 
             private boolean fieldsCheckOK() {
@@ -149,7 +148,7 @@ public class InputAcitivity extends AppCompatActivity {
                         && counterTreadmillDistance.getText().equals("0.0")
                         && txtOtherInput.getText().toString().isEmpty())
                 {
-                    showMessage(2,"All fields are empty, nothing to save, nothing was saved!");
+                    Utils.showMessage(context,ALERT,"All fields are empty, nothing to save, nothing was saved!");
                     return false;
                 }
 
@@ -157,7 +156,7 @@ public class InputAcitivity extends AppCompatActivity {
                 if(counterTreadmillDistance.getText().equals("0.0") && !counterTreadmillTime.getText().equals("0")
                     || counterTreadmillTime.getText().equals("0") && !counterTreadmillDistance.getText().equals("0.0"))
                 {
-                    showMessage(2,"Both Time & Distance fields must be non-zero!");
+                    Utils.showMessage(context,ALERT,"Both Time & Distance fields must be non-zero!");
                     return false;
                 }
 
@@ -165,37 +164,9 @@ public class InputAcitivity extends AppCompatActivity {
             }
         });
 
-
     }
-
-    private void showMessage(int switcher, String msg) {
-        switch(switcher) // 0: toast, 1: snackbar, 2: alert-dialog //
-        {
-            case 1:
-                final Snackbar sn = Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
-                sn.setAction("OK", new View.OnClickListener() {
-                            @Override public void onClick(View v) { sn.dismiss(); }});
-                sn.setActionTextColor(Color.RED);
-                sn.show();
-                break;
-            case 2:
-                AlertDialog alert = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert)
-                        .setIcon(R.drawable.ic_warning_red).setMessage(msg)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) { dialog.dismiss(); }})
-                        .show();
-                break;
-            default: // = 0
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-
-        }
-    }
-
 
     private void loadData() {
-
-        // TODO
         // load data for TODAY, if already EXIST ! //
         dataDb = new DataSQLlite(context);
         Cursor tmp = dataDb.getTodaysData();

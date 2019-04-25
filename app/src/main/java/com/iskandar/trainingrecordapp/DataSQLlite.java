@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,6 +35,17 @@ public class DataSQLlite extends SQLiteOpenHelper {
         super(context, DB_NAME, null, 1);
         this.context = context;
         db = this.getWritableDatabase(); //set our data base to read and write mode.
+        // for dev. db access
+        provideAccessToDev();
+    }
+
+    private void provideAccessToDev() {
+        if (BuildConfig.DEBUG)
+        {
+            new File(db.getPath()).setReadable(true, false);
+        }
+
+        //@terminal: adb -d pull //data/data/com.iskandar.trainingrecordapp/databases/trainingData.db
     }
 
     @Override
@@ -59,9 +71,18 @@ public class DataSQLlite extends SQLiteOpenHelper {
         myValues.put(COL_runningDistance_NAME, runDist);
         myValues.put(COL_pushups_NAME, pushups);
         myValues.put(COL_other_NAME, other);
-        //putting our values into table and getting a result which reflect record id
-        //if we get -1, we had an error
-        long res = db.insert(TABLE_NAME, null, myValues);
+
+        // UPDATE if exist, otherwise INSERT new row //
+        // put values in table and get res (row id) // if res = -1 then ERROR //
+        long res;
+        if(isEntryExist(date))
+        {
+            res = db.update(TABLE_NAME,myValues,null,null);
+        }
+        else
+        {
+            res = db.insert(TABLE_NAME, null, myValues);
+        }
         //return true if we not get -1, error
         return res != (-1);
     }
@@ -88,6 +109,13 @@ public class DataSQLlite extends SQLiteOpenHelper {
 
     public void deleteDataAtDate(String date) {
         db.execSQL("DELETE FROM "+TABLE_NAME+" WHERE "+COL_DATE_NAME+"=" + date);
+    }
+
+    public boolean isEntryExist(String date)
+    {
+        Cursor tmp = db.rawQuery("SELECT * FROM "+TABLE_NAME+
+                " WHERE "+COL_DATE_NAME+"="+date, null);
+        return tmp.getCount()!=0;
     }
 
 

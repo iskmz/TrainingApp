@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         btnInputScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(context,InputAcitivity.class));
+                startActivity(new Intent(context, InputActivity.class));
             }
         });
     }
