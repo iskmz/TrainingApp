@@ -16,12 +16,12 @@ import java.util.Date;
 
 public class InputActivity extends AppCompatActivity {
 
-    final int MAX_PUSHUPS = 150;
-    final int MAX_MINUTES = 180;
-    final double MAX_KILOMETERS = 10;
-    final int MIN_PUSHUPS = 0;
-    final int MIN_MINUTES = 0;
-    final double MIN_KILOMETERS = 0;
+    public static final int MAX_PUSHUPS = 150;
+    public static final int MAX_MINUTES = 180;
+    public static final double MAX_KILOMETERS = 10;
+    public static final int MIN_PUSHUPS = 0;
+    public static final int MIN_MINUTES = 0;
+    public static final double MIN_KILOMETERS = 0;
 
     final long DELAY_ON_LONG_CLICK = 100; // in msec
 
@@ -122,7 +122,7 @@ public class InputActivity extends AppCompatActivity {
         btnExitActivity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                finish(); dataDb.close();
             }
         });
         // SAVE //

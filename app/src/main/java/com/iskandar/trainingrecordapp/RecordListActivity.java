@@ -1,11 +1,11 @@
 package com.iskandar.trainingrecordapp;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +42,7 @@ public class RecordListActivity extends AppCompatActivity {
     private void setListeners() {
         btnCloseList.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { finish(); }
+            public void onClick(View v) { finish(); dataDB.close(); }
         });
         lstView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -57,25 +57,41 @@ public class RecordListActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // remove
-                                dataDB.deleteDataAtDate(dataItemList.get(position).date); // from SQL DB
-                                dataItemList.remove(position); // from dataList
+                                dataDB.deleteDataAtDate(dataItemList.get(position)
+                                        .date.replace(".","")); // from SQL DB
+                                dataItemList.remove(position);              // from dataList
                                 lstView.setAdapter(new DataListAdapter()); // re-set adapter
                             }
                         })
                         .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) { dialog.dismiss(); }}).create();
-                alert.setCanceledOnTouchOutside(false);
-                alert.show();
+                            public void onClick(DialogInterface dialog, int which) { dialog.dismiss(); }})
+                        .show();
                 return true;
             }
         });
+
+        // for DEVELOPER check purpose // "secret" button
+        // UNCOMMENT when needed to adjust data in db // or anything else ...
+        /*
+                btnCloseList.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        dataDB.deleteAllRandomData(); // delete all random data inserted
+                        dataItemList = loadDataToList(); // reload data to list from the "new" DB //
+                        lstView.setAdapter(new DataListAdapter()); // reset adapter
+                        return true;
+                    }
+                });
+        */
     }
 
     private void setPointers() {
         this.context = this;
         btnCloseList = findViewById(R.id.btnCloseList);
         lstView = findViewById(R.id.lstData);
+        dataDB = new DataSQLlite(context);
+        // dataDB.insertRandomData(35); // for DEVELOPER checks //
         dataItemList = loadDataToList();
         lstView.setAdapter(new DataListAdapter());
     }
@@ -83,7 +99,6 @@ public class RecordListActivity extends AppCompatActivity {
     private List<DataItem> loadDataToList() {
         // get data from SQL db using Cursor //
         List<DataItem> tmp = new ArrayList<>();
-        dataDB = new DataSQLlite(context);
         Cursor res = dataDB.getAllData();
         if (res.getCount()==0) return tmp;
         while(res.moveToNext())
@@ -119,7 +134,7 @@ public class RecordListActivity extends AppCompatActivity {
         @Override public long getItemId(int position) { return 0; }
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return convertView!=null?convertView:getItemView(position);
+            return getItemView(position);
         }
         private View getItemView(int pos) {
             View view = LayoutInflater.from(context).inflate(R.layout.item_in_list, null);

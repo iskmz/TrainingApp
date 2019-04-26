@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ public class DataSQLlite extends SQLiteOpenHelper {
     private static final String COL_other_NAME = "other";
 
     public static final String DATE_FORMAT_PATTERN = "yyyyMMdd";
+    private static final String TAG_YEAR_RANDOM = "1888";
 
     Context context;
     private SQLiteDatabase db; //an instance to our SqliteDatabase
@@ -50,7 +52,6 @@ public class DataSQLlite extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // create data table
         String sqlStatment = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (";
         sqlStatment += COL_DATE_NAME + " TEXT PRIMARY KEY,";
@@ -61,6 +62,7 @@ public class DataSQLlite extends SQLiteOpenHelper {
         sqlStatment += ")";
         db.execSQL(sqlStatment);
     }
+
 
     private boolean addDataEntry(String date, String runTime, String runDist, String pushups, String other) {
         //create instance of ContentValues to hold our values
@@ -77,7 +79,15 @@ public class DataSQLlite extends SQLiteOpenHelper {
         long res;
         if(isEntryExist(date))
         {
-            res = db.update(TABLE_NAME,myValues,null,null);
+            try {
+                res = db.update(TABLE_NAME, myValues, null, null);
+            }
+            catch (Exception e)
+            {
+                Log.e("sql",e.getMessage());
+                res = db.insertWithOnConflict(TABLE_NAME,null,myValues,
+                        SQLiteDatabase.CONFLICT_REPLACE);
+            }
         }
         else
         {
@@ -118,6 +128,39 @@ public class DataSQLlite extends SQLiteOpenHelper {
         return tmp.getCount()!=0;
     }
 
+
+    // for check purposes
+    public void insertRandomData(int howMuch)
+    {
+        // deleteAllRows(); // to start FRESH , when errors occur //
+
+        for(int i=0; i< howMuch; i+=1) {
+            int randomMonth=i%12+1,randomDay=i%28+1;
+            String randomMonthStr = (randomMonth<10?"0":"")+randomMonth;
+            String randomDayStr = (randomDay<10?"0":"")+randomDay;
+            String dt = TAG_YEAR_RANDOM + randomMonthStr + randomDayStr;
+            String runTime = "" + (int) (Math.random() * InputActivity.MAX_MINUTES + 1);
+            String runDist = "" + (int) (Math.random() * InputActivity.MAX_KILOMETERS + 1);
+            String pushups = "" + (int) (Math.random() * InputActivity.MAX_PUSHUPS + 1);
+            addDataEntry(dt, runTime, runDist, pushups, i % 3 == 0 ? "check check check!" : "");
+        }
+    }
+
+    // for check purposes
+    public void deleteAllRandomData() {
+
+        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%'});
+        /*
+        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "01"});
+        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "02"});
+        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "03"});
+        */
+    }
+
+    // for check purposes
+    private void deleteAllRows() {
+        db.execSQL("DELETE FROM "+TABLE_NAME);
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
