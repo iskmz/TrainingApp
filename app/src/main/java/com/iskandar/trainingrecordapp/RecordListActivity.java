@@ -111,7 +111,27 @@ public class RecordListActivity extends AppCompatActivity {
                     res.getString(DataSQLlite.COL_other))
             );
         }
+        tmp = sortListByDate(tmp);
         return tmp;
+    }
+
+    private List<DataItem> sortListByDate(List<DataItem> lst) {
+        List<DataItem> sortedList = new ArrayList<>();
+        while (!lst.isEmpty()) // repeat until emptied
+        {
+            // find the item with the SMALLEST rawDate value
+            DataItem smallest = lst.get(0);
+            for (DataItem item : lst) {
+                if (item.getRawDate() < smallest.getRawDate()) {
+                    smallest = item;
+                }
+            }
+            // add smallest item to new sorted list
+            sortedList.add(smallest);
+            // remove the smallest item from the given lst
+            lst.remove(smallest);
+        }
+        return sortedList;
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +144,7 @@ public class RecordListActivity extends AppCompatActivity {
             this.pushups = pushups;
             this.other = other;
         }
+        public int getRawDate() { return Integer.parseInt(this.date.replace(".","")); }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////
     // inner class for ADAPTER to make life even more easier !
