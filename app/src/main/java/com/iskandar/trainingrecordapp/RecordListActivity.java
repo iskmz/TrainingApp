@@ -1,13 +1,16 @@
 package com.iskandar.trainingrecordapp;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -40,6 +43,32 @@ public class RecordListActivity extends AppCompatActivity {
         btnCloseList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { finish(); }
+        });
+        lstView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                // DELETE: are you sure ? alert ! //
+                AlertDialog alert = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert)
+                        .setIcon(R.drawable.ic_warning_red).setTitle(" DELETE ?!")
+                        .setMessage("Pressing OK would delete the"
+                                + "\nrecord at: " + dataItemList.get(position).date+" !!"
+                                +"\n\nAre you sure ?")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // remove
+                                dataDB.deleteDataAtDate(dataItemList.get(position).date); // from SQL DB
+                                dataItemList.remove(position); // from dataList
+                                lstView.setAdapter(new DataListAdapter()); // re-set adapter
+                            }
+                        })
+                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) { dialog.dismiss(); }}).create();
+                alert.setCanceledOnTouchOutside(false);
+                alert.show();
+                return true;
+            }
         });
     }
 
