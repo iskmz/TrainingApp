@@ -2,6 +2,7 @@ package com.iskandar.trainingrecordapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class InputActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -240,11 +242,21 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
         txtOtherInput = findViewById(R.id.txtInputOther);
         btnClearText = findViewById(R.id.btnClearText);
 
+        // locale: US //
+        //setLocale(Locale.US);
+
         // date //
         btnDatePicker = findViewById(R.id.imgDatePicker);
         txtDateToday = findViewById(R.id.txtDateToday);
         setDateForToday();
         loadData(); // for today's
+    }
+
+    private void setLocale(Locale loc) {
+        Configuration configuration = context.getResources().getConfiguration();
+        configuration.setLocale(loc);
+        configuration.setLayoutDirection(loc);
+        context.createConfigurationContext(configuration);
     }
 
     private void setDateForToday() {
@@ -269,9 +281,9 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
 
     private String getTodaysDateFormatted() {
         Date dt = new Date();
-        String pre = new SimpleDateFormat("EEEE, MMMM d").format(dt);
+        String pre = new SimpleDateFormat("EEEE, MMMM d", Locale.US).format(dt);
         String daySuffix = getTodaysSuffix(dt);
-        String post = new SimpleDateFormat(", yyyy").format(dt);
+        String post = new SimpleDateFormat(", yyyy",Locale.US).format(dt);
         return pre + daySuffix + post;
     }
 
@@ -408,9 +420,9 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
         }
 
 
-        String pre = new SimpleDateFormat("EEEE, MMMM d").format(dt);
+        String pre = new SimpleDateFormat("EEEE, MMMM d",Locale.US).format(dt);
         String daySuffix = getTodaysSuffix(dt);
-        String post = new SimpleDateFormat(", yyyy").format(dt);
+        String post = new SimpleDateFormat(", yyyy",Locale.US).format(dt);
         return pre + daySuffix + post;
 
     }

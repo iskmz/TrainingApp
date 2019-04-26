@@ -4,6 +4,7 @@
     android:textDirection="ltr"
     android:layoutDirection="ltr"
     android:gravity="center"
+    android:id="@+id/layDialogInfo"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 

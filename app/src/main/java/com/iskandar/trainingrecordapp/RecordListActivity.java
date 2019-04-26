@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -178,8 +179,14 @@ public class RecordListActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) { showInfoDialog(current.other); }
                     private void showInfoDialog(String msg) {
-                        Dialog infoDialog = new Dialog(context,R.style.Theme_AppCompat_Dialog);
+                        final Dialog infoDialog = new Dialog(context,R.style.Theme_AppCompat_Dialog);
                         View v = LayoutInflater.from(context).inflate(R.layout.dialog_other_info,null);
+                        ((LinearLayout) v.findViewById(R.id.layDialogInfo)).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                infoDialog.dismiss();
+                            }
+                        });
                         ((TextView) v.findViewById(R.id.txtDialogOtherInfo)).setText(msg);
                         infoDialog.setContentView(v);
                         infoDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
