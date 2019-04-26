@@ -144,15 +144,7 @@
             android:padding="5dp"
             android:src="@drawable/ic_close_red"/>
 
-
-
-
     </RelativeLayout>
-
-
-
-
-
 
 
 </LinearLayout>

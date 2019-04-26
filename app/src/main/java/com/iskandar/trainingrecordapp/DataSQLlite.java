@@ -64,7 +64,7 @@ public class DataSQLlite extends SQLiteOpenHelper {
     }
 
 
-    private boolean addDataEntry(String date, String runTime, String runDist, String pushups, String other) {
+    public boolean addDataEntry(String date, String runTime, String runDist, String pushups, String other) {
         //create instance of ContentValues to hold our values
         ContentValues myValues = new ContentValues();
         //insert data by key and value
@@ -112,8 +112,13 @@ public class DataSQLlite extends SQLiteOpenHelper {
     }
 
     public Cursor getTodaysData(){
+        return getDataAtDate(getTodaysDate());
+    }
+
+    public Cursor getDataAtDate(String date)
+    {
         Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME+
-                " WHERE "+COL_DATE_NAME+"="+getTodaysDate(), null);
+                " WHERE "+COL_DATE_NAME+"="+date, null);
         return res;
     }
 

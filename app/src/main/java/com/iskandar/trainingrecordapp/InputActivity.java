@@ -1,20 +1,24 @@
 package com.iskandar.trainingrecordapp;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class InputActivity extends AppCompatActivity {
+public class InputActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     public static final int MAX_PUSHUPS = 150;
     public static final int MAX_MINUTES = 180;
@@ -27,10 +31,12 @@ public class InputActivity extends AppCompatActivity {
 
     final int TOAST = Utils.TOAST, SNACKBAR = Utils.SNACKBAR, ALERT = Utils.ALERT;
 
+    String dateToday, chosenDate;
+
     DataSQLlite dataDb;
 
     Context context;
-    ImageView btnExitActivity, btnSaveData,btnClearText;
+    ImageView btnExitActivity, btnSaveData,btnClearText, btnDatePicker;
     TextView counterTreadmillTime, counterTreadmillDistance, counterPushups;
     ImageButton btnTreadmillTimeAdd, btnTreadmillTimeMinus,
                  btnTreadmillDistanceAdd, btnTreadmillDistanceMinus,
@@ -38,13 +44,14 @@ public class InputActivity extends AppCompatActivity {
     TextView txtDateToday;
     EditText txtOtherInput;
 
+    DatePickerDialog datePickerDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
 
         setPointers();
-        loadData();
         setListeners();
     }
 
@@ -135,15 +142,30 @@ public class InputActivity extends AppCompatActivity {
                 // 4. if successful show message to user "data was successfully saved !"
 
                 if(!fieldsCheckOK()) { return;} // 1 + 2 //
-                // 3 //
-                boolean check = dataDb.addDataEntryToday(
-                                    counterTreadmillTime.getText().toString(),
-                                    counterTreadmillDistance.getText().toString(),
-                                    counterPushups.getText().toString(),
-                                    txtOtherInput.getText().toString());
-                // 4 //
-                if(check) Utils.showMessage(context,TOAST,"Today's data was saved successfully!");
-                else Utils.showMessage(context,TOAST,"ERROR while trying to save data!");
+                if(dateToday.equals(chosenDate)) {
+                    // 3 //
+                    boolean check = dataDb.addDataEntryToday(
+                            counterTreadmillTime.getText().toString(),
+                            counterTreadmillDistance.getText().toString(),
+                            counterPushups.getText().toString(),
+                            txtOtherInput.getText().toString());
+                    // 4 //
+                    if (check)
+                        Utils.showMessage(context, TOAST, "Today's data was saved successfully!");
+                    else Utils.showMessage(context, TOAST, "ERROR while trying to save data!");
+                }
+                else
+                {
+                    // 3 //
+                    boolean check = dataDb.addDataEntry(chosenDate,
+                            counterTreadmillTime.getText().toString(),
+                            counterTreadmillDistance.getText().toString(),
+                            counterPushups.getText().toString(),
+                            txtOtherInput.getText().toString());
+                    // 4 //
+                    if (check) Utils.showMessage(context, TOAST, "data for chosen date was saved successfully!");
+                    else Utils.showMessage(context, TOAST, "ERROR while trying to save data!");
+                }
             }
 
             private boolean fieldsCheckOK() {
@@ -169,18 +191,36 @@ public class InputActivity extends AppCompatActivity {
             }
         });
 
+        // DATE title and picker //
+        txtDateToday.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // RESET to today's date and its DATA, if exist ! //
+                setDateForToday();
+                loadData();
+                return true;
+            }
+        });
+
+        btnDatePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show();
+            }
+        });
     }
 
     private void loadData() {
         // load data for TODAY, if already EXIST ! //
         dataDb = new DataSQLlite(context);
         Cursor tmp = dataDb.getTodaysData();
-        if (tmp.getCount()==0) return;
-        tmp.moveToFirst();
-        counterTreadmillTime.setText(tmp.getString(DataSQLlite.COL_runningTime));
-        counterTreadmillDistance.setText(tmp.getString(DataSQLlite.COL_runningDistance));
-        counterPushups.setText(tmp.getString(DataSQLlite.COL_pushups));
-        txtOtherInput.setText(tmp.getString(DataSQLlite.COL_other));
+        if (tmp.getCount()==0) {
+            initializeViewData();
+        }
+        else {
+            tmp.moveToFirst();
+            setViewDataFromCursor(tmp);
+        }
     }
 
     private void setPointers() {
@@ -200,11 +240,34 @@ public class InputActivity extends AppCompatActivity {
         txtOtherInput = findViewById(R.id.txtInputOther);
         btnClearText = findViewById(R.id.btnClearText);
 
+        // date //
+        btnDatePicker = findViewById(R.id.imgDatePicker);
         txtDateToday = findViewById(R.id.txtDateToday);
-        txtDateToday.setText(getTodaysDate());
+        setDateForToday();
+        loadData(); // for today's
     }
 
-    private String getTodaysDate() {
+    private void setDateForToday() {
+        txtDateToday.setText(getTodaysDateFormatted());
+        dateToday = new SimpleDateFormat(DataSQLlite.DATE_FORMAT_PATTERN).format(new Date());
+        chosenDate = dateToday; // initially !
+        datePickerDialog = new DatePickerDialog(context, this,
+                getTodaysYear(), getTodaysMonth(), getTodaysDay());
+    }
+
+    private int getTodaysDay() {
+        return Integer.parseInt(new SimpleDateFormat("d").format(new Date()));
+    }
+
+    private int getTodaysMonth() {
+        return Integer.parseInt(new SimpleDateFormat("M").format(new Date()))-1; // 0-11 from 1-12 //
+    }
+
+    private int getTodaysYear() {
+        return Integer.parseInt(new SimpleDateFormat("yyyy").format(new Date()));
+    }
+
+    private String getTodaysDateFormatted() {
         Date dt = new Date();
         String pre = new SimpleDateFormat("EEEE, MMMM d").format(dt);
         String daySuffix = getTodaysSuffix(dt);
@@ -214,11 +277,11 @@ public class InputActivity extends AppCompatActivity {
 
     private String getTodaysSuffix(Date date) {
         int today = Integer.parseInt(new SimpleDateFormat("d").format(date));
-        switch (today%10)
+        switch (today)
         {
-            case 1: return "st";
-            case 2: return "nd";
-            case 3: return "rd";
+            case 1: case 21: case 31: return "st";
+            case 2: case 22: return "nd";
+            case 3: case 23: return "rd";
             default: return "th";
         }
     }
@@ -287,4 +350,68 @@ public class InputActivity extends AppCompatActivity {
         return ((double)tmp/10);
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+        // build "chosenDate" string
+        String yearStr = year + ""; // 1 - 4 chars
+        while(yearStr.length()<4) { yearStr = "0" + yearStr; } // add leading zeros, if needed
+        String monthStr = ((month+1)<10?"0":"")+(month+1); // = 2 chars
+        String dayStr = (dayOfMonth<10?"0":"")+dayOfMonth; // = 2 chars
+        chosenDate = yearStr+monthStr+dayStr;
+        Log.e("date","chosenDate: "+chosenDate);
+
+        // set formatted form of chosenDate for the TextView
+        txtDateToday.setText(getDateFormatted(chosenDate));
+
+        // load data for chosen date
+        loadDataFor(chosenDate);
+
+    }
+
+    private void loadDataFor(String chosenDate) {
+        // load data for chosen DATE, if already EXIST ! //
+        dataDb = new DataSQLlite(context);
+        Cursor tmp = dataDb.getDataAtDate(chosenDate);
+        if (tmp.getCount()==0) {
+            initializeViewData();
+        }
+        else {
+            tmp.moveToFirst();
+            setViewDataFromCursor(tmp);
+        }
+    }
+
+    private void initializeViewData() {
+        counterTreadmillTime.setText("0");
+        counterTreadmillDistance.setText("0.0");
+        counterPushups.setText("0");
+        txtOtherInput.setText("");
+    }
+
+    private void setViewDataFromCursor(Cursor tmp) {
+        counterTreadmillTime.setText(tmp.getString(DataSQLlite.COL_runningTime));
+        counterTreadmillDistance.setText(tmp.getString(DataSQLlite.COL_runningDistance));
+        counterPushups.setText(tmp.getString(DataSQLlite.COL_pushups));
+        txtOtherInput.setText(tmp.getString(DataSQLlite.COL_other));
+    }
+
+    private String getDateFormatted(String chosenDate) {
+
+        Date dt;
+        try {
+            dt = new SimpleDateFormat(DataSQLlite.DATE_FORMAT_PATTERN).parse(chosenDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.e("date","parsedDate issue!");
+            return "";
+        }
+
+
+        String pre = new SimpleDateFormat("EEEE, MMMM d").format(dt);
+        String daySuffix = getTodaysSuffix(dt);
+        String post = new SimpleDateFormat(", yyyy").format(dt);
+        return pre + daySuffix + post;
+
+    }
 }
