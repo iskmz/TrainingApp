@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,11 +111,11 @@ public class RecordListActivity extends AppCompatActivity {
                         .setPositiveButton("Do it !!", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.e("del","\tmagic: "+edt.getText().toString()+
-                                        "\t taps: "+Utils.checkTapsStatus());
+//                                Log.e("del","\tmagic: "+edt.getText().toString()+
+//                                        "\t taps: "+Utils.checkTapsStatus());
                                 if(edt.getText().toString().equals("!!!!") && Utils.checkTapsStatus())
                                 {
-                                    Log.e("del","pass & taps confirmed!");
+//                                    Log.e("del","pass & taps confirmed!");
                                     dataDB.deleteUser(currentUserSelected);
                                     loadUsersList();
                                 }
