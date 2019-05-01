@@ -11,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,6 +31,10 @@ public class RecordListActivity extends AppCompatActivity {
     ListView lstView;
     // other views //
     ImageView btnCloseList;
+
+    String currentUserSelected;
+    String[] usersList;
+    Spinner spnUserSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,22 @@ public class RecordListActivity extends AppCompatActivity {
             }
         });
 
+        // USERS SPINNER //
+        spnUserSelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    currentUserSelected = usersList[position];
+                    dataItemList = loadDataToList(currentUserSelected);
+                    lstView.setAdapter(new DataListAdapter());
+            }
+
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         // for DEVELOPER check purpose // "secret" button
         // UNCOMMENT when needed to adjust data in db // or anything else ...
         /*
@@ -95,7 +117,42 @@ public class RecordListActivity extends AppCompatActivity {
         // dataDB.insertRandomData(35); // for DEVELOPER checks //
         dataItemList = loadDataToList();
         lstView.setAdapter(new DataListAdapter());
+        // users list //
+        spnUserSelection = findViewById(R.id.spnUserSelection_RecordAct);
+        loadUsersList();
     }
+
+    private void loadUsersList() {
+        usersList = dataDB.getUsersTableList().toArray(new String[]{});
+        ArrayAdapter aa = new ArrayAdapter(context,android.R.layout.simple_spinner_item, usersList);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+        spnUserSelection.setAdapter(aa);
+        // select default position
+        currentUserSelected = usersList[0];
+        spnUserSelection.setSelection(0,true);
+    }
+
+
+    private List<DataItem> loadDataToList(String username) {
+        // get data from SQL db using Cursor //
+        List<DataItem> tmp = new ArrayList<>();
+        Cursor res = dataDB.getAllDataForUser(username);
+        if (res.getCount()==0) return tmp;
+        while(res.moveToNext())
+        {
+            tmp.add(new DataItem(
+                    res.getString(DataSQLlite.COL_DATE),
+                    res.getString(DataSQLlite.COL_runningDistance),
+                    res.getString(DataSQLlite.COL_runningTime),
+                    res.getString(DataSQLlite.COL_pushups),
+                    res.getString(DataSQLlite.COL_other))
+            );
+        }
+        tmp = sortListByDate(tmp);
+        return tmp;
+    }
+
 
     private List<DataItem> loadDataToList() {
         // get data from SQL db using Cursor //
