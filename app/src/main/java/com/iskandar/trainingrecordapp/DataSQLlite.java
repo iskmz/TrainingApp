@@ -204,6 +204,18 @@ public class DataSQLlite extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM "+ username +" WHERE "+COL_DATE_NAME+"=" + date);
     }
 
+    public void deleteUser(String username) {
+        // i.e. drop table
+        if(username.equals(DEFAULT_TABLE_NAME))
+        {
+            Log.e("del","CANNOT DROP DEFAULT TABLE!!!");
+            return;
+        }
+        db.execSQL("DROP TABLE IF EXISTS " + username);
+        Log.e("del","dropped the table: "+username);
+        usersTableList = getTables(); // refresh userTablesList //
+    }
+
     public boolean isEntryExist(String date)
     {
         return isEntryExist(date,DEFAULT_TABLE_NAME);

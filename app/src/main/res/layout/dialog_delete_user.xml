@@ -1,0 +1,30 @@
+<RelativeLayout android:layout_height="wrap_content" android:layout_width="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditText
+        android:id="@+id/txtInputMagic"
+        android:maxLines="1"
+        android:lines="1"
+        android:layout_width="250dp"
+        android:layout_height="35dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="25dp"
+        android:background="#aaffffff"
+        android:textColor="#000000"
+        android:textColorHint="#000000"
+        android:textSize="18sp"
+        android:maxHeight="40dp"
+        android:scrollbars="horizontal"
+        android:gravity="center"
+        android:hint=" Enter the magic word !!!" />
+
+    <ImageView
+        android:id="@+id/imgTaps"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/txtInputMagic"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_warning_red"/>
+</RelativeLayout>

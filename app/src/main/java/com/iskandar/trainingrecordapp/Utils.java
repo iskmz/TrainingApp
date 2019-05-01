@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 public class Utils {
 
+
+    ///////////////////////////////  show message stuff //////////////////////////////////////////
+
     public static final int TOAST = 0, SNACKBAR = 1, ALERT = 2;
 
     public static void showMessage(Context context, int switcher, String msg) {
@@ -37,5 +40,25 @@ public class Utils {
             default: // = 0
                 Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
         }
+    }
+
+
+    ///////////////////////////////  hidden taps stuff //////////////////////////////////////////
+
+    private static int tapsCounter;
+
+    public static void initializeTaps()
+    {
+        tapsCounter = 0;
+    }
+
+    public static void addTapsCounter()
+    {
+        tapsCounter += 1;
+    }
+
+    public static boolean checkTapsStatus()
+    {
+        return tapsCounter>=11;
     }
 }

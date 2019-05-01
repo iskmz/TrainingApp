@@ -7,12 +7,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,7 +32,7 @@ public class RecordListActivity extends AppCompatActivity {
     List<DataItem> dataItemList;
     ListView lstView;
     // other views //
-    ImageView btnCloseList;
+    ImageView btnCloseList, btnDeleteUser;
 
     String currentUserSelected;
     String[] usersList;
@@ -78,6 +80,63 @@ public class RecordListActivity extends AppCompatActivity {
             }
         });
 
+        btnDeleteUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDeleteUserDialog();
+            }
+
+            private void showDeleteUserDialog() {
+                View v = LayoutInflater.from(context).inflate(R.layout.dialog_delete_user,null);
+                final EditText edt = v.findViewById(R.id.txtInputMagic);
+                final ImageView taps = v.findViewById(R.id.imgTaps);
+
+                taps.setImageResource(R.drawable.ic_warning_red);
+                Utils.initializeTaps();
+                taps.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Utils.addTapsCounter();
+                        if(Utils.checkTapsStatus())
+                        {
+                            taps.setImageResource(R.drawable.ic_greenlit);
+                        }
+                    }
+                });
+
+
+                final AlertDialog delete = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert)
+                        .setTitle("DELETE selected user with all their records !!")
+                        .setView(v)
+                        .setIcon(R.drawable.ic_delete_red)
+                        .setPositiveButton("Do it !!", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.e("del","\tmagic: "+edt.getText().toString()+
+                                        "\t taps: "+Utils.checkTapsStatus());
+                                if(edt.getText().toString().equals("!!!!") && Utils.checkTapsStatus())
+                                {
+                                    Log.e("del","pass & taps confirmed!");
+                                    dataDB.deleteUser(currentUserSelected);
+                                    loadUsersList();
+                                }
+                                spnUserSelection.setSelection(0,true);
+                                dialog.dismiss();
+                            }
+
+
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                spnUserSelection.setSelection(0,true);
+                                dialog.dismiss();
+                            }
+                        }).show();
+
+            }
+        });
+
         // USERS SPINNER //
         spnUserSelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -112,6 +171,7 @@ public class RecordListActivity extends AppCompatActivity {
     private void setPointers() {
         this.context = this;
         btnCloseList = findViewById(R.id.btnCloseList);
+        btnDeleteUser = findViewById(R.id.btnDeleteUser);
         lstView = findViewById(R.id.lstData);
         dataDB = new DataSQLlite(context);
         // dataDB.insertRandomData(35); // for DEVELOPER checks //
