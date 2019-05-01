@@ -16,7 +16,7 @@ import java.util.List;
 public class DataSQLlite extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "trainingData.db"; // name of the DB file in our phone
-    private static final String DEFAULT_TABLE_NAME = "data"; // name of the data table in the DB
+    public static final String DEFAULT_TABLE_NAME = "data"; // name of the data table in the DB
     // columns names & numbers
     public static final int COL_DATE = 0;
     private static final String COL_DATE_NAME = "date";
@@ -42,7 +42,6 @@ public class DataSQLlite extends SQLiteOpenHelper {
         this.context = context;
         db = this.getWritableDatabase(); //set our data base to read and write mode.
         usersTableList = getTables();
-
         // dev. check
         Log.e("tbls","TABLES"+getListStr(usersTableList));
         // for dev. db access
@@ -68,6 +67,10 @@ public class DataSQLlite extends SQLiteOpenHelper {
             }
         }
         return lst;
+    }
+
+    public List<String> getUsersTableList() {
+        return usersTableList;
     }
 
     private void provideAccessToDev() {
@@ -129,7 +132,8 @@ public class DataSQLlite extends SQLiteOpenHelper {
         return res;
     }
 
-    public boolean addDataEntry(String date, String runTime, String runDist, String pushups, String other) {
+
+    public boolean addDataEntry(String username, String date, String runTime, String runDist, String pushups, String other) {
         //create instance of ContentValues to hold our values
         ContentValues myValues = new ContentValues();
         //insert data by key and value
@@ -142,24 +146,33 @@ public class DataSQLlite extends SQLiteOpenHelper {
         // UPDATE if exist, otherwise INSERT new row //
         // put values in table and get res (row id) // if res = -1 then ERROR //
         long res;
-        if(isEntryExist(date))
+        if(isEntryExist(date,username))
         {
             try {
-                res = db.update(DEFAULT_TABLE_NAME, myValues, null, null);
+                res = db.update(username, myValues, null, null);
             }
             catch (Exception e)
             {
                 Log.e("sql",e.getMessage());
-                res = db.insertWithOnConflict(DEFAULT_TABLE_NAME,null,myValues,
+                res = db.insertWithOnConflict(username,null,myValues,
                         SQLiteDatabase.CONFLICT_REPLACE);
             }
         }
         else
         {
-            res = db.insert(DEFAULT_TABLE_NAME, null, myValues);
+            res = db.insert(username, null, myValues);
         }
         //return true if we not get -1, error
         return res != (-1);
+    }
+
+
+    public boolean addDataEntryToday(String username, String runTime, String runDist, String pushups, String other) {
+        return addDataEntry(username,getTodaysDate(), runTime, runDist, pushups, other);
+    }
+
+    public boolean addDataEntry(String date, String runTime, String runDist, String pushups, String other) {
+        return addDataEntry(DEFAULT_TABLE_NAME,date,runTime,runDist,pushups,other);
     }
 
 
@@ -193,7 +206,11 @@ public class DataSQLlite extends SQLiteOpenHelper {
 
     public boolean isEntryExist(String date)
     {
-        Cursor tmp = db.rawQuery("SELECT * FROM "+ DEFAULT_TABLE_NAME +
+        return isEntryExist(date,DEFAULT_TABLE_NAME);
+    }
+
+    private boolean isEntryExist(String date, String username) {
+        Cursor tmp = db.rawQuery("SELECT * FROM "+ username +
                 " WHERE "+COL_DATE_NAME+"="+date, null);
         return tmp.getCount()!=0;
     }
@@ -235,5 +252,3 @@ public class DataSQLlite extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
 }
-
-

@@ -2,13 +2,18 @@ package com.iskandar.trainingrecordapp;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -18,6 +23,7 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,6 +52,10 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
                     btnPushupsAdd, btnPushupsMinus;
     TextView txtDateToday;
     EditText txtOtherInput;
+
+    private final String ADD_USER = "... [Add] ...";
+    String currentUserSelected;
+    String[] usersList;
     Spinner spnUserSelection;
 
     DatePickerDialog datePickerDialog;
@@ -148,7 +158,7 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
                 if(!fieldsCheckOK()) { return;} // 1 + 2 //
                 if(dateToday.equals(chosenDate)) {
                     // 3 //
-                    boolean check = dataDb.addDataEntryToday(
+                    boolean check = dataDb.addDataEntryToday(currentUserSelected,
                             counterTreadmillTime.getText().toString(),
                             counterTreadmillDistance.getText().toString(),
                             counterPushups.getText().toString(),
@@ -161,7 +171,7 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
                 else
                 {
                     // 3 //
-                    boolean check = dataDb.addDataEntry(chosenDate,
+                    boolean check = dataDb.addDataEntry(currentUserSelected, chosenDate,
                             counterTreadmillTime.getText().toString(),
                             counterTreadmillDistance.getText().toString(),
                             counterPushups.getText().toString(),
@@ -212,10 +222,90 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
                 datePickerDialog.show();
             }
         });
+
+        // USERS SPINNER //
+        spnUserSelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(usersList[position].equals(ADD_USER))
+                {
+                    showAddUserDialog();
+                }
+                else
+                {
+                    currentUserSelected = usersList[position];
+                    loadDataAtDateFor(chosenDate,currentUserSelected);
+                }
+            }
+
+
+            private void showAddUserDialog() {
+                View v = LayoutInflater.from(context).inflate(R.layout.dialog_add_user,null);
+                final EditText edt = v.findViewById(R.id.txtInputUsername);
+                final AlertDialog addUser = new AlertDialog.Builder(context,R.style.Theme_AppCompat_Dialog_Alert)
+                        .setTitle("Add new user ... ")
+                        .setView(v)
+                        .setIcon(R.drawable.ic_add_box_green)
+                        .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if(addNewUser(edt.getText().toString()))
+                                {
+                                    loadUsersList();
+                                }
+                                spnUserSelection.setSelection(usersList.length>1?usersList.length-2:0);
+                                dialog.dismiss();
+                            }
+
+                            private boolean addNewUser(String username) {
+                                // if empty
+                                if (username.isEmpty())
+                                {
+                                    Utils.showMessage(context,SNACKBAR,"nothing entered!");
+                                    return false;
+                                }
+                                // if already exist
+                                if(Arrays.asList(usersList).contains(username))
+                                {
+                                    Utils.showMessage(context,SNACKBAR,"user already exists!");
+                                    return false;
+                                }
+                                // all is ok
+                                dataDb.addUserTable(username);
+                                Utils.showMessage(context,TOAST,"user created successfully!");
+                                return true;
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                spnUserSelection.setSelection(usersList.length>1?usersList.length-2:0);
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+
+    private void loadDataAtDateFor(String chosenDate, String userName) {
+        Cursor tmp = dataDb.getDataAtDateForUser(chosenDate,userName);
+        if (tmp.getCount()==0) {
+            initializeViewData();
+        }
+        else {
+            tmp.moveToFirst();
+            setViewDataFromCursor(tmp);
+        }
     }
 
     private void loadData() {
-        // load data for TODAY, if already EXIST ! //
+        // load data for TODAY, FOR DEFAULT USER // if already EXIST ! //
         dataDb = new DataSQLlite(context);
         Cursor tmp = dataDb.getTodaysData();
         if (tmp.getCount()==0) {
@@ -252,7 +342,33 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
         btnDatePicker = findViewById(R.id.imgDatePicker);
         txtDateToday = findViewById(R.id.txtDateToday);
         setDateForToday();
-        loadData(); // for today's
+        loadData(); // for today's // for DEFAULT user //
+        loadUsersList();
+    }
+
+    private void loadUsersList() {
+        // for dev. check // START //
+        // usersList = new String[] {"abc","def","ghi","jkl","mno","pqr","stu","vwx","yz"};
+        // for dev. check // END //
+        String[] arrFirst = dataDb.getUsersTableList().toArray(new String[]{});
+        usersList = Arrays.copyOf(arrFirst,arrFirst.length+1);
+        usersList[arrFirst.length] = ADD_USER;
+        ArrayAdapter aa = new ArrayAdapter(context,android.R.layout.simple_spinner_item, usersList);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+        spnUserSelection.setAdapter(aa);
+        // select default position
+        int pos = getDefaultPos(usersList);
+        currentUserSelected = usersList[pos];
+        spnUserSelection.setSelection(pos,true);
+    }
+
+    private int getDefaultPos(String[] arr) {
+        for(int i=0; i<arr.length; i+=1)
+        {
+            if(arr[i].equals(DataSQLlite.DEFAULT_TABLE_NAME)) return i;
+        }
+        return 0;
     }
 
     private void setLocale(Locale loc) {
@@ -385,16 +501,8 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
     }
 
     private void loadDataFor(String chosenDate) {
-        // load data for chosen DATE, if already EXIST ! //
-        dataDb = new DataSQLlite(context);
-        Cursor tmp = dataDb.getDataAtDate(chosenDate);
-        if (tmp.getCount()==0) {
-            initializeViewData();
-        }
-        else {
-            tmp.moveToFirst();
-            setViewDataFromCursor(tmp);
-        }
+        // load data for chosen DATE, if already EXIST ! // for CURRENT USER selected //
+        loadDataAtDateFor(chosenDate,currentUserSelected);
     }
 
     private void initializeViewData() {
@@ -415,7 +523,7 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
 
         Date dt;
         try {
-            dt = new SimpleDateFormat(DataSQLlite.DATE_FORMAT_PATTERN).parse(chosenDate);
+            dt = new SimpleDateFormat(DataSQLlite.DATE_FORMAT_PATTERN,Locale.US).parse(chosenDate);
         } catch (ParseException e) {
             e.printStackTrace();
             Log.e("date","parsedDate issue!");
