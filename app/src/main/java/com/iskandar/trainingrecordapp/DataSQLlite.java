@@ -9,12 +9,14 @@ import android.util.Log;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class DataSQLlite extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "trainingData.db"; // name of the DB file in our phone
-    private static final String TABLE_NAME = "data"; // name of the data table in the DB
+    private static final String DEFAULT_TABLE_NAME = "data"; // name of the data table in the DB
     // columns names & numbers
     public static final int COL_DATE = 0;
     private static final String COL_DATE_NAME = "date";
@@ -30,15 +32,42 @@ public class DataSQLlite extends SQLiteOpenHelper {
     public static final String DATE_FORMAT_PATTERN = "yyyyMMdd";
     private static final String TAG_YEAR_RANDOM = "1888";
 
+
     Context context;
     private SQLiteDatabase db; //an instance to our SqliteDatabase
+    private List<String> usersTableList;
 
     public DataSQLlite(Context context) {
         super(context, DB_NAME, null, 1);
         this.context = context;
         db = this.getWritableDatabase(); //set our data base to read and write mode.
+        usersTableList = getTables();
+
+        // dev. check
+        Log.e("tbls","TABLES"+getListStr(usersTableList));
         // for dev. db access
         provideAccessToDev();
+    }
+
+    private String getListStr(List<String> usersTableList) {
+        String str = "";
+        for(String st : usersTableList) str+="\n"+st;
+        return str;
+    }
+
+    private List<String> getTables() {
+        List<String> lst = new ArrayList<>();
+        Cursor c = db.rawQuery("SELECT name FROM sqlite_master " +
+                "WHERE type='table' AND name!='android_metadata'", null);
+
+        if (c.moveToFirst()) {
+            while ( !c.isAfterLast() )
+            {
+                lst.add(c.getString(0));
+                c.moveToNext();
+            }
+        }
+        return lst;
     }
 
     private void provideAccessToDev() {
@@ -52,8 +81,8 @@ public class DataSQLlite extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // create data table
-        String sqlStatment = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (";
+        // create data table // DEFAULT one ! //
+        String sqlStatment = "CREATE TABLE IF NOT EXISTS " + DEFAULT_TABLE_NAME + " (";
         sqlStatment += COL_DATE_NAME + " TEXT PRIMARY KEY,";
         sqlStatment += COL_runningTime_NAME + " TEXT,";
         sqlStatment += COL_runningDistance_NAME + " TEXT,";
@@ -63,6 +92,42 @@ public class DataSQLlite extends SQLiteOpenHelper {
         db.execSQL(sqlStatment);
     }
 
+    public void addUserTable(String tableName)
+    {
+        // add new data table for specified user //
+        String sqlStatment = "CREATE TABLE IF NOT EXISTS " + tableName + " (";
+        sqlStatment += COL_DATE_NAME + " TEXT PRIMARY KEY,";
+        sqlStatment += COL_runningTime_NAME + " TEXT,";
+        sqlStatment += COL_runningDistance_NAME + " TEXT,";
+        sqlStatment += COL_pushups_NAME + " TEXT,";
+        sqlStatment += COL_other_NAME + " TEXT";
+        sqlStatment += ")";
+        db.execSQL(sqlStatment);
+
+        // refresh userTablesList //
+        usersTableList = getTables();
+    }
+
+    public Cursor getAllDataForUser(String userName){
+        if(!usersTableList.contains(userName))
+        {
+            Log.e("err","no such username: ["+userName+"] exists!");
+            return null;
+        }
+        Cursor res = db.rawQuery("SELECT * FROM "+ userName, null);
+        return res;
+    }
+
+    public Cursor getTodaysDataForUser(String userName){
+        return getDataAtDateForUser(getTodaysDate(),userName);
+    }
+
+    public Cursor getDataAtDateForUser(String date,String userName)
+    {
+        Cursor res = db.rawQuery("SELECT * FROM "+ userName +
+                " WHERE "+COL_DATE_NAME+"="+date, null);
+        return res;
+    }
 
     public boolean addDataEntry(String date, String runTime, String runDist, String pushups, String other) {
         //create instance of ContentValues to hold our values
@@ -80,18 +145,18 @@ public class DataSQLlite extends SQLiteOpenHelper {
         if(isEntryExist(date))
         {
             try {
-                res = db.update(TABLE_NAME, myValues, null, null);
+                res = db.update(DEFAULT_TABLE_NAME, myValues, null, null);
             }
             catch (Exception e)
             {
                 Log.e("sql",e.getMessage());
-                res = db.insertWithOnConflict(TABLE_NAME,null,myValues,
+                res = db.insertWithOnConflict(DEFAULT_TABLE_NAME,null,myValues,
                         SQLiteDatabase.CONFLICT_REPLACE);
             }
         }
         else
         {
-            res = db.insert(TABLE_NAME, null, myValues);
+            res = db.insert(DEFAULT_TABLE_NAME, null, myValues);
         }
         //return true if we not get -1, error
         return res != (-1);
@@ -107,7 +172,7 @@ public class DataSQLlite extends SQLiteOpenHelper {
     }
 
     public Cursor getAllData(){
-        Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME, null);
+        Cursor res = db.rawQuery("SELECT * FROM "+ DEFAULT_TABLE_NAME, null);
         return res;
     }
 
@@ -117,18 +182,18 @@ public class DataSQLlite extends SQLiteOpenHelper {
 
     public Cursor getDataAtDate(String date)
     {
-        Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME+
+        Cursor res = db.rawQuery("SELECT * FROM "+ DEFAULT_TABLE_NAME +
                 " WHERE "+COL_DATE_NAME+"="+date, null);
         return res;
     }
 
     public void deleteDataAtDate(String date) {
-        db.execSQL("DELETE FROM "+TABLE_NAME+" WHERE "+COL_DATE_NAME+"=" + date);
+        db.execSQL("DELETE FROM "+ DEFAULT_TABLE_NAME +" WHERE "+COL_DATE_NAME+"=" + date);
     }
 
     public boolean isEntryExist(String date)
     {
-        Cursor tmp = db.rawQuery("SELECT * FROM "+TABLE_NAME+
+        Cursor tmp = db.rawQuery("SELECT * FROM "+ DEFAULT_TABLE_NAME +
                 " WHERE "+COL_DATE_NAME+"="+date, null);
         return tmp.getCount()!=0;
     }
@@ -154,17 +219,17 @@ public class DataSQLlite extends SQLiteOpenHelper {
     // for check purposes
     public void deleteAllRandomData() {
 
-        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%'});
+        db.delete(DEFAULT_TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%'});
         /*
-        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "01"});
-        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "02"});
-        db.delete(TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "03"});
+        db.delete(DEFAULT_TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "01"});
+        db.delete(DEFAULT_TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "02"});
+        db.delete(DEFAULT_TABLE_NAME, COL_DATE_NAME + " LIKE ?", new String[]{TAG_YEAR_RANDOM + '%' + "03"});
         */
     }
 
     // for check purposes
     private void deleteAllRows() {
-        db.execSQL("DELETE FROM "+TABLE_NAME);
+        db.execSQL("DELETE FROM "+ DEFAULT_TABLE_NAME);
     }
 
     @Override

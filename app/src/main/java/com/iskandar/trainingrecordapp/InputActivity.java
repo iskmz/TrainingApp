@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -45,6 +46,7 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
                     btnPushupsAdd, btnPushupsMinus;
     TextView txtDateToday;
     EditText txtOtherInput;
+    Spinner spnUserSelection;
 
     DatePickerDialog datePickerDialog;
 
@@ -241,6 +243,7 @@ public class InputActivity extends AppCompatActivity implements DatePickerDialog
         btnPushupsMinus = findViewById(R.id.btnLessPushups);
         txtOtherInput = findViewById(R.id.txtInputOther);
         btnClearText = findViewById(R.id.btnClearText);
+        spnUserSelection = findViewById(R.id.spnUserSelection);
 
         // locale: US //
         //setLocale(Locale.US);

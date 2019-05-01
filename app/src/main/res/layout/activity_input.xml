@@ -11,13 +11,27 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
+        <Spinner
+            android:id="@+id/spnUserSelection"
+            android:layout_width="150dp"
+            android:layout_height="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="16dp"
+            android:background="#252E30"
+            >
+
+
+        </Spinner>
+
         <TextView
             android:id="@+id/txtDateToday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:textSize="20sp"
