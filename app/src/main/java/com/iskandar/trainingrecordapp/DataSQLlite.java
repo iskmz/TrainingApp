@@ -200,8 +200,8 @@ public class DataSQLlite extends SQLiteOpenHelper {
         return res;
     }
 
-    public void deleteDataAtDate(String date) {
-        db.execSQL("DELETE FROM "+ DEFAULT_TABLE_NAME +" WHERE "+COL_DATE_NAME+"=" + date);
+    public void deleteDataAtDate(String username, String date) {
+        db.execSQL("DELETE FROM "+ username +" WHERE "+COL_DATE_NAME+"=" + date);
     }
 
     public boolean isEntryExist(String date)

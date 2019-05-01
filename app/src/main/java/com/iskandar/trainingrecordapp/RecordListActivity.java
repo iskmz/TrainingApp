@@ -64,8 +64,8 @@ public class RecordListActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // remove
-                                dataDB.deleteDataAtDate(dataItemList.get(position)
-                                        .date.replace(".","")); // from SQL DB
+                                dataDB.deleteDataAtDate(currentUserSelected, dataItemList.get(position)
+                                                .date.replace(".","")); // from SQL DB
                                 dataItemList.remove(position);              // from dataList
                                 lstView.setAdapter(new DataListAdapter()); // re-set adapter
                             }
