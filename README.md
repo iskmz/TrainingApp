@@ -1,6 +1,6 @@
 # TrainingApp
 
-a personal training app , based on SQLlite, 
+a personal training app for ANDROID, based on SQLlite, 
 to store a record of daily training data
 such as treadmill time / distance , push-ups
 and other fields ... 
