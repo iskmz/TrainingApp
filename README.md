@@ -1,7 +1,7 @@
 # TrainingApp
 
-a personal training app , based on SQLlite 
-to store, a record of daily training data
+a personal training app , based on SQLlite, 
+to store a record of daily training data
 such as tredmill time / distance , push-ups
 and other fields ... 
 
